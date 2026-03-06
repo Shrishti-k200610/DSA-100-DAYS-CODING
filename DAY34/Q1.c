@@ -45,4 +45,5 @@ int main(){
     }
 
     printf("Result = %d",pop());
+    return 0;
 }
