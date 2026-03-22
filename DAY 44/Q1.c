@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Node structure
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+// Create node
+struct Node* newNode(int data) {
+    struct Node* temp = (struct Node*)malloc(sizeof(struct Node));
+    temp->data = data;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+
+// Build tree (level order)
+struct Node* buildTree(int arr[], int n) {
+    struct Node* nodes[100];
+
+    for (int i = 0; i < n; i++) {
+        if (arr[i] != -1)
+            nodes[i] = newNode(arr[i]);
+        else
+            nodes[i] = NULL;
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (nodes[i] != NULL) {
+            int l = 2*i + 1;
+            int r = 2*i + 2;
+
+            if (l < n) nodes[i]->left = nodes[l];
+            if (r < n) nodes[i]->right = nodes[r];
+        }
+    }
+
+    return nodes[0];
+}
+
+// Inorder (LNR)
+void inorder(struct Node* root) {
+    if (root == NULL) return;
+    inorder(root->left);
+    printf("%d", root->data);
+    inorder(root->right);
+}
+
+// Preorder (NLR)
+void preorder(struct Node* root) {
+    if (root == NULL) return;
+    printf("%d", root->data);
+    preorder(root->left);
+    preorder(root->right);
+}
+
+// Postorder (LRN)
+void postorder(struct Node* root) {
+    if (root == NULL) return;
+    postorder(root->left);
+    postorder(root->right);
+    printf("%d", root->data);
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    int arr[100];
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    struct Node* root = buildTree(arr, n);
+
+    inorder(root);
+    printf("\n");
+
+    preorder(root);
+    printf("\n");
+
+    postorder(root);
+
+    return 0;
+}
