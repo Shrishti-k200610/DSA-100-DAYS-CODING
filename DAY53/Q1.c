@@ -67,4 +67,44 @@ void verticalOrder(struct Node* root) {
 
     while (front < rear) {
         struct QNode temp = queue[front++];
-        struct Node* curr = temp
+        struct Node* curr = temp.node;
+        int hd = temp.hd;
+
+        // Store node
+        map[hd + offset][count[hd + offset]++] = curr->data;
+
+        // Left child
+        if (curr->left)
+            queue[rear++] = (struct QNode){curr->left, hd - 1};
+
+        // Right child
+        if (curr->right)
+            queue[rear++] = (struct QNode){curr->right, hd + 1};
+    }
+
+    // Print result
+    for (int i = 0; i < 200; i++) {
+        if (count[i] > 0) {
+            for (int j = 0; j < count[i]; j++) {
+                printf("%d ", map[i][j]);
+            }
+            printf("\n");
+        }
+    }
+}
+
+// Main
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    int arr[n];
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    struct Node* root = buildTree(arr, n);
+
+    verticalOrder(root);
+
+    return 0;
+}
