@@ -1,72 +1,60 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
-// DFS function to detect cycle
-bool dfs(int node, int V, int **adj, bool visited[], bool recStack[]) {
-    visited[node] = true;
-    recStack[node] = true;
+#define MAX 100
 
-    for (int i = 0; i < V; i++) {
-        if (adj[node][i]) { // edge exists
-            if (!visited[i]) {
-                if (dfs(i, V, adj, visited, recStack))
-                    return true;
-            } else if (recStack[i]) {
-                return true; // cycle found
-            }
-        }
-    }
+int graph[MAX][MAX];
+int visited[MAX];
+int stack[MAX];
+int top = -1;
+int V; // Number of vertices
 
-    recStack[node] = false; // remove from recursion stack
-    return false;
+// Push to stack
+void push(int v) {
+    stack[++top] = v;
 }
 
-// Function to check cycle in graph
-bool hasCycle(int V, int **adj) {
-    bool *visited = (bool *)calloc(V, sizeof(bool));
-    bool *recStack = (bool *)calloc(V, sizeof(bool));
+// DFS function
+void dfs(int v) {
+    visited[v] = 1;
 
     for (int i = 0; i < V; i++) {
-        if (!visited[i]) {
-            if (dfs(i, V, adj, visited, recStack)) {
-                free(visited);
-                free(recStack);
-                return true;
-            }
+        if (graph[v][i] && !visited[i]) {
+            dfs(i);
         }
     }
 
-    free(visited);
-    free(recStack);
-    return false;
+    // Push after visiting all adjacent vertices
+    push(v);
+}
+
+// Topological Sort function
+void topologicalSort() {
+    for (int i = 0; i < V; i++) {
+        if (!visited[i]) {
+            dfs(i);
+        }
+    }
+
+    printf("Topological Ordering:\n");
+    while (top != -1) {
+        printf("%d ", stack[top--]);
+    }
 }
 
 int main() {
-    int V = 4;
+    printf("Enter number of vertices: ");
+    scanf("%d", &V);
 
-    // Allocate adjacency matrix
-    int **adj = (int **)malloc(V * sizeof(int *));
+    printf("Enter adjacency matrix:\n");
     for (int i = 0; i < V; i++) {
-        adj[i] = (int *)calloc(V, sizeof(int));
+        visited[i] = 0;
+        for (int j = 0; j < V; j++) {
+            scanf("%d", &graph[i][j]);
+        }
     }
 
-    // Example edges
-    adj[0][1] = 1;
-    adj[1][2] = 1;
-    adj[2][3] = 1;
-    adj[3][1] = 1; // cycle here
-
-    if (hasCycle(V, adj))
-        printf("YES\n");
-    else
-        printf("NO\n");
-
-    // Free memory
-    for (int i = 0; i < V; i++) {
-        free(adj[i]);
-    }
-    free(adj);
+    topologicalSort();
 
     return 0;
 }
